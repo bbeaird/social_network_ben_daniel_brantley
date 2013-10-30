@@ -10,7 +10,12 @@ get '/' do
 end
 
 post '/' do
-  erb :sign_in
+  curr_user = User.find_by email: params[:email]
+  if !curr_user || curr_user.password != params[:password]
+    erb :login_failed
+  else
+    erb :sign_in
+  end
 end
 
 get '/sign_up' do
@@ -18,6 +23,6 @@ get '/sign_up' do
 end
 
 post '/sign_up' do
-  # User.create(:email => params[:email], :password => params[:password])
+  User.create(:email => params[:email], :password => params[:password])
   erb :confirm_new_user
 end
