@@ -93,7 +93,7 @@ get '/:page_id' do
   end
 end
 
-# CREATE - Create a new instance and pass the user along
+# CREATE - /posts/:id Create a new instance and pass the user along
 post '/:page_id' do
   @feed_owner = User.find_by id: params[:page_id]
   Post.create(:title => params[:title], :body => params[:body],
