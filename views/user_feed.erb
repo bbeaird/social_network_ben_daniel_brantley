@@ -1,19 +1,48 @@
 <%= "You are now visiting #{@feed_owner.email}'s feed." %>  To create a new post, click <a href="/<%= "#{params[:page_id]}" %>/new">here</a>.
 <br/>
 <br/>
-<% users_posts = [] %>
-<% Post.find_each do |post| %>
-  <% if post.user_id == @feed_owner.id %>
-    <% users_posts << post %>
-  <% end %>
-<% end %>
-<% users_posts.reverse.each do |post| %>
-  <b><%= post.title %></b>
-  <br/>
-  <i><%= "Created at #{post.created_at}" %></i>
-  <br/>
-  <%= post.body %>
-  <br/>
-  <br/>
-<% end %>
 
+
+
+
+<% if (Friend.is_friend?(@feed_owner.id, User.all.find_by_email(session[:email]).id)) || @feed_owner.id == User.all.find_by_email(session[:email]).id %> 
+
+  <%= "#{@feed_owner.name}" %> is friends with:
+  <br /><br />
+
+  <% Friend.all.each do |friend| %>
+  <% if friend.user_id == @feed_owner.id %>
+    <%= User.find(friend.friend_id).name %><br />
+  <% elsif friend.friend_id == @feed_owner.id %>
+    <%= User.find(friend.user_id).name %><br />
+  <% end %>
+  <% end %>
+  <br />
+  <br />
+
+  <% users_posts = [] %>
+  <% Post.find_each do |post| %>
+    <% if post.user_id == @feed_owner.id %>
+      <% users_posts << post %>
+    <% end %>
+  <% end %>
+  <% users_posts.reverse.each do |post| %>
+    <b><%= post.title %></b>
+    <br/>
+    <i><%= "Created at #{post.created_at}" %></i>
+    <br/>
+    <%= post.body %>
+    <br/>
+    <br/>
+  <% end %>
+
+<% else %>
+
+<p><h5>You cannot view this feed because you are not friends with this person.</h5></p>
+<br />
+<form id="sign_in" action="/friend_requests" method="post" name="friend_request_button">
+  <input type="hidden" name="friend_id" value="<%=@feed_owner.id%>" >
+  <input type="submit" value="Send friend request!"/>
+</form>
+<br /> <br />
+<% end %>
