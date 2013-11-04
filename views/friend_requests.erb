@@ -1,24 +1,31 @@
+<div id="friend_requests">
+
 <p>Received Requests</p>
 <% FriendRequest.all.each do |request| %>
-  <%= @session_user_id %>
-    <% if request.user_id == User.all.find_by_email(session[:email]).id %>
-  <%= User.all.find(request.request_id).name %><br />
-  <form id="received_requests" action="/accept_request" method="post" name="friend_request_button">
+<%= @session_user_id %>
+<% if request.request_id == User.all.find_by_email(session[:email]).id %>
+<%= User.all.find(request.user_id).name %><br />
+<form id="received_requests" action="/friend_requests" method="post" name="friend_request_button">
   <input type="hidden" name="friend_id" value="<%=request.request_id%>" >
   <input type="hidden" name="user_id" value="<%=request.user_id%>" >
-  <input type="submit" value="Accept"/><br />
+  <input type="hidden" name="action" value="accept" >
+  <input type="submit" value="Accept"/>
+</form>
+<form id="deny_requests" action="/friend_requests" method="post" name="deny_request_button">
+  <input type="hidden" name="friend_id" value="<%=request.request_id%>" >
+  <input type="hidden" name="user_id" value="<%=request.user_id%>" >
+  <input type="hidden" name="action" value="deny" >
+  <input type="submit" value="Reject"/><br />
 </form>
 
-  <% end %>
 <% end %>
-
-
-
+<% end %>
 
 <p>Sent Requests</p>
 <% FriendRequest.all.each do |request| %>
-  <%= @session_user_id %>
-    <% if User.all.find(request.request_id).id == User.all.find_by_email(session[:email]).id %>
-  <%= User.all.find(request.user_id).name %><br />
-  <% end %>
+<%= @session_user_id %>
+<% if User.all.find(request.user_id).id == User.all.find_by_email(session[:email]).id %>
+<%= User.all.find(request.request_id).name %><br />
 <% end %>
+<% end %>
+</div>

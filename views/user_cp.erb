@@ -1,0 +1,59 @@
+<h3>Welcome, <%=(User.find_by email: session[:email]).name %>.</h3>
+
+<a href="/logout">Logout</a> <a href="<%= (User.find_by email: session[:email]).id %>">View Your Feed</a>
+
+<p>
+<form id="search" action="/search/query" method="get">
+  <fieldset>
+  <label>Search by email:</label>
+  <br/>
+  <input name="email" type="text"/><br/>
+  <input type="submit" value="Search Users"/>
+  </fieldset>
+</form>
+</p>
+
+
+<div id="friend_requests" style="border-radius:1px; border-color: black;">
+  <p><h4>Received Requests:</h4></p>
+
+  <% FriendRequest.all.each do |request| %>
+
+  <%= @session_user_id %>
+  <% if request.request_id == User.all.find_by_email(session[:email]).id %>
+  <%= User.all.find(request.user_id).name %><br />
+  <form id="received_requests" action="/friend_requests" method="post" name="friend_request_button">
+    <input type="hidden" name="friend_id" value="<%=request.request_id%>" >
+    <input type="hidden" name="user_id" value="<%=request.user_id%>" >
+    <input type="hidden" name="action" value="accept" >
+    <input type="submit" value="Accept"/>
+  </form>
+  <form id="deny_requests" action="/friend_requests" method="post" name="deny_request_button">
+    <input type="hidden" name="friend_id" value="<%=request.request_id%>" >
+    <input type="hidden" name="user_id" value="<%=request.user_id%>" >
+    <input type="hidden" name="action" value="deny" >
+    <input type="submit" value="Reject"/><br />
+  </form>
+  <% end %>
+  <% end %>
+  <p><h4>Sent Requests:</h4></p>
+  <% FriendRequest.all.each do |request| %>
+  <%= @session_user_id %>
+  <% if User.all.find(request.user_id).id == User.all.find_by_email(session[:email]).id %>
+  <%= User.all.find(request.request_id).name %><br />
+  <% end %>
+  <% end %>
+</div>
+
+
+<div id="friends_list">
+  <h4>You are friends with:</h4>
+  
+  <% Friend.all.each do |friend| %>
+  <% if friend.user_id == (User.find_by email: session[:email]).id %>
+  <%= User.find(friend.friend_id).name %><br />
+  <% elsif friend.friend_id == (User.find_by email: session[:email]).id %>
+  <a href="/<%= User.find(friend.user_id).id %>"><%= User.find(friend.user_id).name %></a><br />
+  <% end %>
+  <% end %>
+</div>
